@@ -23,8 +23,6 @@ media
 # C extensions
 *.so
 
-# DB gitbhub에 빠졌는지 확인
-plabtiercheckDB
 # Distribution / packaging
 .Python
 build/

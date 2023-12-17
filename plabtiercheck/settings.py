@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.kakao',
 ]
 
-
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -129,11 +128,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
+TIME_ZONE = 'UTC'
+
 USE_I18N = True
 
 USE_TZ = True
 
-TIME_ZONE = 'Asia/Seoul'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
