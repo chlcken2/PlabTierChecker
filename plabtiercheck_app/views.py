@@ -38,6 +38,11 @@ oauth2_login = OAuth2LoginView.adapter_view(KakaoOAuth2Adapter)
 oauth2_callback = OAuth2CallbackView.adapter_view(KakaoOAuth2Adapter)
 
 @login_required
+def mypage(request):
+    user = request.user
+    return render(request, 'mypage.html', {'user': user})
+
+@login_required
 def create_team(request):
     if request.method == 'POST':
         name = request.POST.get('name')

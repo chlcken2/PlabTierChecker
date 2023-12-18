@@ -1,0 +1,61 @@
+.custom-kakao {
+    background-color: #FEE500;
+    padding: 3px 5px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-right: 10px;
+}
+.custom-item-double{
+    display: inline-block;
+    width: 48%;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    padding: 12px;
+    background-color: #f8fafb;
+    float: right;
+}
+.badge_lv-system {
+    min-width: 34px;
+    width: 34px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 20px;
+    border-radius: 6px;
+    font-weight: 700;
+}
+.badge-pro {
+    color: #FF4D37;
+    background-color: #870B22;
+}
+.badge-semipro {
+    color: #FFCF0A;
+    background-color: #FF4D37;
+}
+.badge {
+    padding: 3px 4px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-right: 8px;
+    display: inline-block;
+}
+.font-weight-bold {
+    font-weight: 700;
+}
+.banner-magazine_wrap {
+    background-color: #E9F6FF;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 30px;
+    padding: 30px;
+    margin-bottom: 20px;
+    align-items: center;
+    cursor: pointer;
+}
+.banner-magazine_title {
+    width: 80%;
+    color: #2D4F83;
+}
+.banner-magazine_thumb {
+    width: 50px;
+    height: 50px;
+}
