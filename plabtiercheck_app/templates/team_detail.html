@@ -1,0 +1,16 @@
+{% extends 'team_detail.html' %}
+
+{% block content %}
+  <h2>{{ team.name }}</h2>
+  <h3>Members</h3>
+  <ul>
+    {% for member in members %}
+      <li>{{ member.user.username }} - {% if member.is_approved %}Approved{% else %}Pending{% endif %}
+        {% if user == team.creator and not member.is_approved %}
+          <a href="{% url 'accept_member' member.id %}">Accept</a>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'join_team' team.id %}">Join this team</a>
+{% endblock %}
