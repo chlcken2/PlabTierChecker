@@ -1,0 +1,89 @@
+<div class="modal fade" id="teamCreateModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalToggleLabel">팀 만들기</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form class="needs-validation">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="teamNameInput" class="form-label team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">팀 이름</label>
+            <input type="text" class="form-control" id="teamNameInput" placeholder="팀 이름을 작성해주세요." required minlength="2" maxlength="30">
+            <div class="invalid-feedback">팀 이름은 2자 이상 30자 이내로 입력해주세요.</div>
+          </div>
+          <div class="mb-3">
+            <label for="teamPathInput" class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">팀 코드</label>
+            <input type="text" class="form-control" id="teamPathInput" placeholder="" required minlength="2" maxlength="30">
+            <div class="invalid-feedback"> 팀 코드는 2자 이상 30자 이내로 입력해주세요.</div>
+          </div>
+          <div class="mb-3">
+            <label for="teamLocationInput" class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">팀 활동지역</label>
+            <input type="text" class="form-control" id="teamLocationInput" placeholder="" required minlength="2" maxlength="30">
+            <div class="invalid-feedback"> 팀 활동지역은 2자 이상 30자 이내로 입력해주세요.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">다음</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalToggleLabel2">주 활동일</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form class="needs-validation">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">활동 요일</label>
+            <select class="form-select w-100" aria-label="Default select example">
+              <option selected value="monday">월</option>
+              <option value="tuesday">화</option>
+              <option value="saturday">수</option>
+              <option value="thursday">목</option>
+              <option value="friday">금</option>
+              <option value="saturday">토</option>
+              <option value="sunday">일</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">활동 시간대</label>
+            <select class="form-select w-100" aria-label="Default select example">
+              <option selected value="monday">아침(6~10시)</option>
+              <option value="tuesday">낮(10~18시)</option>
+              <option value="saturday">저녁(16~24시)</option>
+              <option value="thursday">심야(24~6시)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-target="#teamCreateModalToggle" data-bs-toggle="modal" data-bs-dismiss="modal">뒤로 가기</button>
+          <button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal" data-bs-dismiss="modal">팀 생성하기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var teamCreateForm = document.querySelector('#teamCreateModalToggle .needs-validation');
+        var nextButton = document.querySelector('#teamCreateModalToggle .btn-primary');
+
+        teamCreateForm.addEventListener('input', function () {
+            // 폼의 유효성을 검사하고 버튼의 활성화 상태를 업데이트합니다.
+            if (teamCreateForm.checkValidity()) {
+                nextButton.disabled = false;
+            } else {
+                nextButton.disabled = true;
+            }
+        });
+
+        // 페이지 로드 시 초기 버튼 상태 설정
+        nextButton.disabled = !teamCreateForm.checkValidity();
+    });
+</script>

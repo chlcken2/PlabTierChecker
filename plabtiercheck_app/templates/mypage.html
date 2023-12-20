@@ -49,7 +49,6 @@
             </section>
         </div>
         <!-- 오른쪽 컬럼 -->
-<!--        <div class="col-8 d-flex flex-column vh-100">-->
          <div class="col-8 d-flex mr-2 flex-column bg-light vh-100">
             <!-- 첫 번째 행 -->
             <div class="row mb-2 bg-white h-30">
@@ -65,18 +64,6 @@
                         </div>
                         <div class="py-2">
                             <a href="" class="d-flex flex-row align-items-center">
-                                <img src="https://d31wz4d3hgve8q.cloudfront.net/static/img/ic_friend.svg" alt="친구"width="24" height="24" class="mr-2">
-                                <li>친구</li>
-                            </a>
-                        </div>
-                        <div class="py-2">
-                            <a href="" class="d-flex flex-row align-items-center">
-                                <img src="https://d31wz4d3hgve8q.cloudfront.net/static/img/ic_email.svg" alt="스카웃"width="24" height="24" class="mr-2">
-                                <li>친구초대</li>
-                            </a>
-                        </div>
-                        <div class="py-2">
-                            <a href="" class="d-flex flex-row align-items-center">
                                 <img src="https://d31wz4d3hgve8q.cloudfront.net/static/img/ic_profile.svg" alt="프로필수정" width="24" height="24" class="mr-2">
                                 <li>프로필 수정</li>
                             </a>
@@ -87,6 +74,39 @@
                                 <li>설정</li>
                             </a>
                         </div>
+                    </ul>
+                </div>
+            </div>
+             <div class="row mb-2 bg-white h-30">
+                <div class="p-3 pb-4">
+                    <!-- 여기에 두 번째 행의 내용 -->
+                    <div class="d-flex align-items-center pb-3">
+                        <p class="font-weight-bold ">팀</p>
+                        <img class="mr-1" src="https://d31wz4d3hgve8q.cloudfront.net/static/img/ic_level_auth.svg" style="width: 14px; height: 14px; margin-left: 5px;">
+                        <p style="font-size:12px; text-decoration:underline;">팀을 생성해야 활동 가능합니다.</p>
+                    </div>
+                    <ul>
+                        <div class="py-2 pb-4">
+                            {% for team in user_teams %}
+                            <a href="" class="d-flex flex-row align-items-center">
+                                <img src="https://d31wz4d3hgve8q.cloudfront.net/static/img/ic_friend.svg" alt="친구"width="24" height="24" class="mr-2">
+                                <li>{ team.name }</li>
+                            </a>
+                            {% empty %}
+                            <div>가입한 팀이 없습니다.</div>
+                            {% endfor %}
+                        </div>
+                        <div class="py-2">
+                            <a href="" class="d-flex flex-row align-items-center">
+                                <img src="https://d31wz4d3hgve8q.cloudfront.net/static/img/ic_email.svg" alt="스카웃"width="24" height="24" class="mr-2">
+                                <li>팀 가입하기</li>
+                            </a>
+                        </div>
+                        <div class="py-2 d-flex flex-row align-items-center">
+                            <img src="https://d31wz4d3hgve8q.cloudfront.net/static/img/ic_email.svg" alt="스카웃"width="24" height="24" class="mr-2">
+                            <a class="d-flex flex-row align-items-center" data-bs-toggle="modal" href="#teamCreateModalToggle" role="button">팀 만들기</a>
+                        </div>
+                        {% include 'team_create_modal.html' %}
                     </ul>
                 </div>
             </div>

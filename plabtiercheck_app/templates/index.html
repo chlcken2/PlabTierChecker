@@ -2,5 +2,14 @@
 
 {% block content %}
     <h1>Welcome to My Home Page</h1>
+    {% if latest_question_list %}
+        <ul>
+        {% for question in player_list %}
+            <li><a href="/player/{{ player.id }}/">{{ player.player_name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>검색된 결과가 없습니다.</p>
+    {% endif %}
     <!-- 여기에 홈 페이지의 나머지 내용을 추가합니다 -->
 {% endblock %}
