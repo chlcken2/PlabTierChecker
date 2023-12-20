@@ -1,25 +1,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Welcome to My Home Page</h1>
-    <!-- index.html -->
-    <h2>최근 등록된 플레이어</h2>
-    <ul>
-    {% for player in recent_players %}
-        <li>{{ player.player_name }} - 가입일: {{ player.created_at }}</li>
-    {% empty %}
-        <li>새로운 플레이어가 없습니다.</li>
-    {% endfor %}
-    </ul>
+    <div class="container">
+        <div class="row">
+            <!-- 최근 등록된 플레이어 -->
+            <div class="col-md-6">
+                <h2>최근 등록된 플레이어</h2>
+                <ul class="list-group">
+                    {% for player in recent_players %}
+                        <li class="list-group-item">{{ player.user.username }} - 가입일: {{ player.created_at }}</li>
+                    {% empty %}
+                        <li class="list-group-item">새로운 플레이어가 없습니다.</li>
+                    {% endfor %}
+                </ul>
+            </div>
 
-    <h2>우수 플레이어</h2>
-    <ul>
-    {% for player_stat in top_players %}
-        <li>{{ player_stat.player.player_name }} - 종합 점수: {{ player_stat.total_score }}</li>
-    {% empty %}
-        <li>우수 플레이어가 없습니다.</li>
-    {% endfor %}
-    </ul>
+            <!-- 우수 플레이어 -->
+            <div class="col-md-6">
+                <h2>우수 플레이어</h2>
+                <ul class="list-group">
+                    {% for player_stat in top_players %}
+                        <li class="list-group-item">{{ player_stat.player.user.username }} - 평균 점수: {{ player_stat.average_teammate_score }}</li>
+                    {% empty %}
+                        <li class="list-group-item">우수 플레이어가 없습니다.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <!-- 여기에 홈 페이지의 나머지 내용을 추가합니다 -->
 {% endblock %}

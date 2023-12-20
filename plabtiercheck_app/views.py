@@ -11,19 +11,6 @@ import requests
 from plabtiercheck_app.models import Player, PostGameStatistics
 
 
-def index(request):
-    social_apps = SocialApp.objects.all()
-    recent_players = Player.objects.all().order_by('-created_at')[:10]
-
-    top_players = PostGameStatistics.objects.annotate(
-        total_score=F('average_teammate_score') + F('manager_referee_score')
-    ).order_by('-total_score')[:10]
-    return render(request, 'index.html', {
-        'recent_players': recent_players,
-        'top_players': top_players
-    })
-
-
 class KakaoOAuth2Adapter(OAuth2Adapter):
     provider_id = KakaoProvider.id
     access_token_url = "https://kauth.kakao.com/oauth/token"
@@ -40,6 +27,20 @@ class KakaoOAuth2Adapter(OAuth2Adapter):
 
 oauth2_login = OAuth2LoginView.adapter_view(KakaoOAuth2Adapter)
 oauth2_callback = OAuth2CallbackView.adapter_view(KakaoOAuth2Adapter)
+
+
+def index(request):
+    # 최근 등록된 플레이어
+    recent_players = Player.objects.all().order_by('-created_at')[:10]
+
+    # 우수 플레이어 (PostGameStatistics 모델을 기준으로)
+    # 이 예시에서는 단순화를 위해 PostGameStatistics 모델의 average_teammate_score만 사용
+    top_players = PostGameStatistics.objects.order_by('-average_teammate_score')[:10]
+
+    return render(request, 'index.html', {
+        'recent_players': recent_players,
+        'top_players': top_players
+    })
 
 
 @login_required
