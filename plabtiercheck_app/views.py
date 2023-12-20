@@ -2,18 +2,26 @@ from allauth.socialaccount.providers.kakao.provider import KakaoProvider
 from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2LoginView, OAuth2CallbackView
 from allauth.socialaccount.models import SocialApp
 from django.contrib.auth.decorators import login_required
+from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 import requests
 
 # Create your views here.
-
+from plabtiercheck_app.models import Player, PostGameStatistics
 
 
 def index(request):
     social_apps = SocialApp.objects.all()
-    print(social_apps)
-    return render(request, 'index.html')
+    recent_players = Player.objects.all().order_by('-created_at')[:10]
+
+    top_players = PostGameStatistics.objects.annotate(
+        total_score=F('average_teammate_score') + F('manager_referee_score')
+    ).order_by('-total_score')[:10]
+    return render(request, 'index.html', {
+        'recent_players': recent_players,
+        'top_players': top_players
+    })
 
 
 class KakaoOAuth2Adapter(OAuth2Adapter):

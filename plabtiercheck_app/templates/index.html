@@ -2,14 +2,24 @@
 
 {% block content %}
     <h1>Welcome to My Home Page</h1>
-    {% if latest_question_list %}
-        <ul>
-        {% for question in player_list %}
-            <li><a href="/player/{{ player.id }}/">{{ player.player_name }}</a></li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>검색된 결과가 없습니다.</p>
-    {% endif %}
+    <!-- index.html -->
+    <h2>최근 등록된 플레이어</h2>
+    <ul>
+    {% for player in recent_players %}
+        <li>{{ player.player_name }} - 가입일: {{ player.created_at }}</li>
+    {% empty %}
+        <li>새로운 플레이어가 없습니다.</li>
+    {% endfor %}
+    </ul>
+
+    <h2>우수 플레이어</h2>
+    <ul>
+    {% for player_stat in top_players %}
+        <li>{{ player_stat.player.player_name }} - 종합 점수: {{ player_stat.total_score }}</li>
+    {% empty %}
+        <li>우수 플레이어가 없습니다.</li>
+    {% endfor %}
+    </ul>
+
     <!-- 여기에 홈 페이지의 나머지 내용을 추가합니다 -->
 {% endblock %}

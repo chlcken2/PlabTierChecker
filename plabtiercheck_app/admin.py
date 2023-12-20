@@ -1,9 +1,12 @@
 from django.contrib import admin
 
 # Register your models here.
-from plabtiercheck_app.models import Player, DefaultData, PerformanceData, LocationData
+from plabtiercheck_app.models import Player,StandardDataSource,GPSDataSource,TeammateEvaluationSource,ManagerEvaluationSource,PostGameStatistics,TotalPlayerStatistics
 
 admin.site.register(Player)
-admin.site.register(DefaultData)
-admin.site.register(PerformanceData)
-admin.site.register(LocationData)
+admin.site.register(StandardDataSource)
+admin.site.register(GPSDataSource)
+admin.site.register(TeammateEvaluationSource)
+admin.site.register(ManagerEvaluationSource)
+admin.site.register(PostGameStatistics)
+admin.site.register(TotalPlayerStatistics)
