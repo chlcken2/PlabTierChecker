@@ -165,3 +165,5 @@ class TotalPlayerStatistics(models.Model):
     def __str__(self):
         return f"Total Player Statistics as of {self.modified_at.strftime('%Y-%m-%d')}"
 
+
+# 데이터 분석 비교

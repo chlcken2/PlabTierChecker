@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 <div class="container vh-100">
     <div class="row d-flex flex-nowrap vh-100 mt-4">
@@ -10,7 +11,7 @@
                         <p class="h4 mb-0">{{user.username}}</p>
                         <div class="mt-2">
                             <button class="btn btn-primary btn-sm me-2">프로필 보기</button>
-                            <button class="btn btn-secondary btn-sm">QR코드</button>
+                            <button class="btn btn-secondary btn-sm" id="connectBluetooth">블루투스 연결하기</button>
                         </div>
                     </div>
                     <div class="d-flex justify-content-start align-items-center w-100">
@@ -154,4 +155,39 @@
         </div>
     </div>
 </div>
+{% if user.is_authenticated %}
+<script>
+  let userName = "{{ user.username }}";
+  let id = "{{ user.id }}";
+  
+  document.getElementById('connectBluetooth').addEventListener('click', function() {
+    if (!navigator.bluetooth) {
+      alert("Web Bluetooth is not available in this browser.");
+      console.error("Web Bluetooth is not available in this browser.");
+      return;
+    }
+
+    alert(userName +"#"+id+ " 계정으로 연결합니다. (Web Bluetooth is available in this browser.)");
+
+    navigator.bluetooth.requestDevice({
+      acceptAllDevices: true
+    // filters: [{ name: 'WH-1000XM5' }] 장치명 나면 장치 등록  네임 + 숫자
+    })
+    .then(device => {
+      alert('장치 선택됨: ' + device.name);
+      console.log('장치 선택됨:', device.name);
+      return device.gatt.connect();
+    })
+    .then(server => {
+      alert('블루투스 장치에 연결되었습니다: ' + server);
+      console.log('블루투스 장치에 연결되었습니다:', server);
+      // 여기서 추가적인 서비스 및 특성 작업 수행
+    })
+    .catch(error => {
+      alert('블루투스 연결 중 오류 발생: ' + error);
+      console.error('블루투스 연결 중 오류 발생:', error);
+    });
+  });
+</script>
+{% endif %}
 {% endblock %}

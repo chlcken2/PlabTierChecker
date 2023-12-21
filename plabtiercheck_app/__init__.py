@@ -1,0 +1,1 @@
+default_app_config = 'plabtiercheck_app.apps.MyAppConfig'
