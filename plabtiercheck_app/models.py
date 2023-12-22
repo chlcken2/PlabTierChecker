@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class PlayerTierType(models.TextChoices):  # 3 나눈후 몫과 나머지로 계산
+class PlayerTierType(models.TextChoices):  # divmod 연산자로 3을 나눈후 몫과 나머지로 계산
     PRO1 = '1', '프로3'
     PRO2 = '2', '프로2'
     PRO3 = '3', '프로1'
@@ -27,6 +27,7 @@ class PlayerTierType(models.TextChoices):  # 3 나눈후 몫과 나머지로 계
 class Player(models.Model):
     user = models.OneToOneField(User, related_name="players", on_delete=models.CASCADE)
     player_path = models.SlugField(max_length=20)
+    one_day_game_participation = models.IntegerField(help_text="하루 참여 게임수", default=0)
     player_tier = models.CharField(
         max_length=2,
         choices=PlayerTierType.choices,
@@ -40,9 +41,19 @@ class Player(models.Model):
         return self.user.username + " #" + str(self.user.id)
 
 
+class Manager(models.Model):
+    user = models.OneToOneField(User, related_name="managers", on_delete=models.CASCADE)
+    one_day_game_participation = models.IntegerField(help_text="하루 참여 게임수", default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 # player:1 = defaults:N
 class StandardDataSource(models.Model):
-    player = models.ManyToManyField(Player, related_name="standard_data_source")
+    is_made = models.ForeignKey(Player, related_name="participateis_made", on_delete=models.CASCADE)
+    players = models.ManyToManyField(Player, related_name="participate_players")
+    manager = models.ForeignKey(User, related_name="participate_manager", on_delete=models.CASCADE)
+    # is_manager = models.BooleanField(default=False)
+    game_name = models.CharField(max_length=20, help_text="게임 이름")
 
     class GameType(models.TextChoices):
         SOCCER = 'SO', '축구'
@@ -53,7 +64,8 @@ class StandardDataSource(models.Model):
         choices=GameType.choices,
         default=GameType.FUTSAL,
     )
-    one_day_game_participation = models.IntegerField(help_text="하루 참여 게임수", default=1)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     one_day_play_time = models.IntegerField(help_text="하루 평균 플레이 시간 (분)", default=0)
     played_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -62,11 +74,11 @@ class StandardDataSource(models.Model):
         return f"Game ID: {self.id}, Played At: {self.played_at.strftime('%Y-%m-%d')}"
 
 
-
 # GPS 테이블 실시간 데이터 연동 / 반영?? (gps 연결, 연결 종료, 연결 지속 시간, 이동거리, 속도, 경기장)
 class GPSDataSource(models.Model):
     player = models.ForeignKey(Player, related_name='gps_data_sources', on_delete=models.CASCADE)
-    related_game = models.ForeignKey(StandardDataSource, related_name='gps_data_sources', on_delete=models.SET_NULL, null=True, blank=True)
+    related_game = models.ForeignKey(StandardDataSource, related_name='gps_data_sources', on_delete=models.SET_NULL,
+                                     null=True, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, help_text="위도")
     longitude = models.DecimalField(max_digits=9, decimal_places=6, help_text="경도")
     x_speed = models.FloatField(help_text="x축 속도", default=0)
@@ -78,7 +90,6 @@ class GPSDataSource(models.Model):
 
     def __str__(self):
         return f"{self.player.user.username} - GPS Data {str(self.id)}"
-
 
 
 # 같이 뛴 플레이어들에 대한 평가
@@ -164,6 +175,5 @@ class TotalPlayerStatistics(models.Model):
 
     def __str__(self):
         return f"Total Player Statistics as of {self.modified_at.strftime('%Y-%m-%d')}"
-
 
 # 데이터 분석 비교

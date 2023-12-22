@@ -1,0 +1,111 @@
+<div class="modal fade" id="gameCreateModalToggle" aria-hidden="true" aria-labelledby="gameCreateModalToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="gameCreateModalToggleLabel">게임 생성하기</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+            <p class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">게임 생성자</p>
+            <input type="text" class="form-control" id="gameCreator" placeholder="" required value="{{ user.username }}님" readOnly>
+            <div class="invalid-feedback"> 생성자는 2자 이상 30자 이내로 입력해주세요.</div>
+          </div>
+          <div class="mb-3">
+            <p class="form-label team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">게임 이름</p>
+            <input type="text" class="form-control" id="gameName" name="teamName" placeholder="게임 이름을 작성해주세요." required minlength="2" maxlength="30">
+            <div class="invalid-feedback">게임 이름은 2자 이상 30자 이내로 입력해주세요.</div>
+          </div>
+          <div class="mb-3">
+            <p class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">타입</p>
+            <select class="form-select w-100" id="gameTypeSelect" aria-label="Default select example">
+              <option selected value="FU">풋살</option>
+              <option value="SO">축구</option>
+            </select>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="1" id="checkIsManager">
+            <label class="form-check-label" for="checkIsManager">
+              매니저인가요?
+            </label>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-bs-target="#gameCreateModalToggle2" data-bs-toggle="modal">다음</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="gameCreateModalToggle2" aria-hidden="true" aria-labelledby="gameCreateModalToggleLabel2" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="gameCreateModalToggleLabel2">게임 생성하기</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        게임 생성하기 버튼을 클릭하면 게임이 생성됩니다. <br>
+        게임 생성 후 gps를 통해 기기를 연결하고 플레이어들과 연결해보세요.
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-bs-target="#gameCreateModalToggle" data-bs-toggle="modal">뒤로가기</button>
+<!--        <button class="btn btn-primary" data-bs-target="#gameCreateBtn" data-bs-toggle="modal">게임생성하기</button>-->
+        <button class="btn btn-primary" id="gameCreateBtn">게임생성하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 템플릿 내에서 JavaScript 코드 추가 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+// createGame 함수 정의
+function createGame() {
+<!--    var game_creator = document.getElementById("gameCreator").value;-->
+    var game_name = document.getElementById("gameName").value;
+    var game_type = document.getElementById("gameTypeSelect").value;
+
+    // 사용자의 위치 정보 얻기
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            // 위도와 경도 정보를 서버로 보내서 저장
+            $.ajax({
+                type: "POST",
+                url: "{% url 'create_game' %}",  // 뷰의 URL을 설정해야 합니다.
+                data: {
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    game_name: game_name,
+                    game_type: game_type,
+                    latitude: latitude,
+                    longitude: longitude,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        alert("게임 생성이 완료되었습니다.");
+                        // 게임 생성이 성공하면 원하는 작업 수행
+                    } else {
+                        alert("게임 생성에 실패했습니다.");
+                    }
+                },
+                error: function() {
+                    alert("서버 오류 발생");
+                }
+            });
+        }, function(error) {
+            alert("위치 정보를 얻어오는데 실패했습니다.");
+        });
+    } else {
+        alert("브라우저가 Geolocation API를 지원하지 않습니다.");
+    }
+}
+
+// 버튼에 onclick 이벤트를 할당
+document.getElementById("gameCreateBtn").onclick = createGame;
+
+</script>
+
+

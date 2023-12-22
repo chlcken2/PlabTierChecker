@@ -1,4 +1,8 @@
+//파일 import 시 load js 추가 하기
+{% if user.is_authenticated %}
 <script>
+   let userName = "{{ user.username }}";
+   let id = "{{ user.id }}";
   document.getElementById('connectBluetooth').addEventListener('click', function() {
     if (!navigator.bluetooth) {
       alert("Web Bluetooth is not available in this browser.");
@@ -27,3 +31,4 @@
     });
   });
 </script>
+{% endif %}

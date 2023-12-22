@@ -11,7 +11,18 @@
                         <p class="h4 mb-0">{{user.username}}</p>
                         <div class="mt-2">
                             <button class="btn btn-primary btn-sm me-2">프로필 보기</button>
-                            <button class="btn btn-secondary btn-sm" id="connectBluetooth">블루투스 연결하기</button>
+                            {% include 'modal/game_create_modal.html' %}
+                            {% if user.has_created_game %}
+                            <button class="btn btn-success btn-sm me-2" data-bs-target="#gameCreateModalToggle" data-bs-toggle="modal">게임 참여하기</button>
+                            {% else %}
+                            <!-- 게임이 없는 경우 -->
+                            <button class="btn btn-success btn-sm me-2" data-bs-target="#gameCreateModalToggle" data-bs-toggle="modal">게임 생성하기</button>
+                            {% endif %}
+                            <!-- GPS로 100미터 이내에 게임이 있는 경우 버튼 표시 -->
+                            {% if user.is_nearby_game %}
+                            <button class="btn btn-success btn-sm me-2" data-bs-target="#gameCreateModalToggle" data-bs-toggle="modal">게임 참여하기</button>
+                            {% endif %}
+
                         </div>
                     </div>
                     <div class="d-flex justify-content-start align-items-center w-100">
@@ -103,11 +114,10 @@
                                 <li>팀 가입하기</li>
                             </a>
                         </div>
-                        <div class="py-2 d-flex flex-row align-items-center">
-                            <img src="https://d31wz4d3hgve8q.cloudfront.net/static/img/ic_email.svg" alt="스카웃"width="24" height="24" class="mr-2">
-                            <a class="d-flex flex-row align-items-center" data-bs-toggle="modal" href="#teamCreateModalToggle" role="button">팀 만들기</a>
-                        </div>
-                        {% include 'team_create_modal.html' %}
+<!--                        <div class="py-2 d-flex flex-row align-items-center">-->
+<!--                            <img src="https://d31wz4d3hgve8q.cloudfront.net/static/img/ic_email.svg" alt="스카웃"width="2기4" height="24" class="mr-2">-->
+<!--                            <a class="d-flex flex-row align-items-center" data-bs-toggle="modal" href="#teamCreateModalToggle" role="button">팀 만들기</a>-->
+<!--                        </div>-->
                     </ul>
                 </div>
             </div>
@@ -155,39 +165,5 @@
         </div>
     </div>
 </div>
-{% if user.is_authenticated %}
-<script>
-  let userName = "{{ user.username }}";
-  let id = "{{ user.id }}";
-  
-  document.getElementById('connectBluetooth').addEventListener('click', function() {
-    if (!navigator.bluetooth) {
-      alert("Web Bluetooth is not available in this browser.");
-      console.error("Web Bluetooth is not available in this browser.");
-      return;
-    }
 
-    alert(userName +"#"+id+ " 계정으로 연결합니다. (Web Bluetooth is available in this browser.)");
-
-    navigator.bluetooth.requestDevice({
-      acceptAllDevices: true
-    // filters: [{ name: 'WH-1000XM5' }] 장치명 나면 장치 등록  네임 + 숫자
-    })
-    .then(device => {
-      alert('장치 선택됨: ' + device.name);
-      console.log('장치 선택됨:', device.name);
-      return device.gatt.connect();
-    })
-    .then(server => {
-      alert('블루투스 장치에 연결되었습니다: ' + server);
-      console.log('블루투스 장치에 연결되었습니다:', server);
-      // 여기서 추가적인 서비스 및 특성 작업 수행
-    })
-    .catch(error => {
-      alert('블루투스 연결 중 오류 발생: ' + error);
-      console.error('블루투스 연결 중 오류 발생:', error);
-    });
-  });
-</script>
-{% endif %}
 {% endblock %}
