@@ -33,7 +33,7 @@ def index(request):
     top_players = PostGameStatistics.objects.all().order_by('-average_teammate_score')[:10]
     return render(request, 'index.html', {
         'recent_players': recent_players,
-        'top_players': top_players  # 결과값을 템플릿으로 전달
+        'top_players': top_players
     })
 
 
@@ -43,7 +43,7 @@ def create_game(request):
         # 게임 정보 추출
         game_name = request.POST.get('game_name')
         game_type = request.POST.get('game_type')
-        is_manager = request.POST.get('is_manager') == '1'
+        is_manager = True if request.POST.get('is_manager') == "true" else False
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
         player = request.user.player
@@ -56,14 +56,13 @@ def create_game(request):
             is_made=player
         )
 
-        game.players.add(player)  # 게임에 플레이어 추가
-
+        game.players.add(player)
         # 매니저인 경우 게임에 매니저 정보 추가
         if is_manager:
-            game.manager = player
+            game.manager = request.user
             game.save()
 
-        # JSON 응답
+        # JSON 응답 결과, -> 응답 결과 분리 예정
         response_data = {
             'success': True,
             'message': '게임이 생성되었습니다.',

@@ -24,7 +24,7 @@
             </select>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="1" id="checkIsManager">
+            <input class="form-check-input" name=is_manager" type="checkbox" value="false" id="checkIsManager">
             <label class="form-check-label" for="checkIsManager">
               매니저인가요?
             </label>
@@ -61,9 +61,9 @@
 <script>
 // createGame 함수 정의
 function createGame() {
-<!--    var game_creator = document.getElementById("gameCreator").value;-->
     var game_name = document.getElementById("gameName").value;
     var game_type = document.getElementById("gameTypeSelect").value;
+    var isChecked = $('#checkIsManager').is(':checked'); // 체크 여부 가져오기
 
     // 사용자의 위치 정보 얻기
     if (navigator.geolocation) {
@@ -81,12 +81,11 @@ function createGame() {
                     game_type: game_type,
                     latitude: latitude,
                     longitude: longitude,
+                    is_manager: isChecked
                 },
                 success: function(response) {
                     if (response.success) {
                         alert(response.message);
-                        alert("게임 생성이 완료되었습니다.");
-                        // 게임 생성이 성공하면 원하는 작업 수행
                     } else {
                         alert("게임 생성에 실패했습니다.");
                     }
@@ -107,5 +106,6 @@ function createGame() {
 document.getElementById("gameCreateBtn").onclick = createGame;
 
 </script>
+
 
 
