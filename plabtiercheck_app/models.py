@@ -25,7 +25,7 @@ class PlayerTierType(models.TextChoices):  # divmod 연산자로 3을 나눈후 
 
 
 class Player(models.Model):
-    user = models.OneToOneField(User, related_name="players", on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name="player", on_delete=models.CASCADE)
     player_path = models.SlugField(max_length=20)
     one_day_game_participation = models.IntegerField(help_text="하루 참여 게임수", default=0)
     player_tier = models.CharField(
@@ -49,10 +49,9 @@ class Manager(models.Model):
 
 # player:1 = defaults:N
 class StandardDataSource(models.Model):
-    is_made = models.ForeignKey(Player, related_name="participateis_made", on_delete=models.CASCADE)
+    is_made = models.ForeignKey(Player, related_name="created_player", on_delete=models.CASCADE)
     players = models.ManyToManyField(Player, related_name="participate_players")
-    manager = models.ForeignKey(User, related_name="participate_manager", on_delete=models.CASCADE)
-    # is_manager = models.BooleanField(default=False)
+    manager = models.ForeignKey(User, related_name="managed_player", on_delete=models.SET_NULL, null=True)
     game_name = models.CharField(max_length=20, help_text="게임 이름")
 
     class GameType(models.TextChoices):
@@ -71,7 +70,7 @@ class StandardDataSource(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Game ID: {self.id}, Played At: {self.played_at.strftime('%Y-%m-%d')}"
+        return f"Game ID: {self.id}, Created By: {self.is_made.user.username}"
 
 
 # GPS 테이블 실시간 데이터 연동 / 반영?? (gps 연결, 연결 종료, 연결 지속 시간, 이동거리, 속도, 경기장)
