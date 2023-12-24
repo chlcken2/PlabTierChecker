@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class PlayerTierType(models.TextChoices):  # divmod 연산자로 3을 나눈후 몫과 나머지로 계산
+class PLAYER_TIER_TYPE(models.TextChoices):  # divmod 연산자로 3을 나눈후 몫과 나머지로 계산
     PRO1 = '1', '프로3'
     PRO2 = '2', '프로2'
     PRO3 = '3', '프로1'
@@ -30,8 +30,8 @@ class Player(models.Model):
     one_day_game_participation = models.IntegerField(help_text="하루 참여 게임수", default=0)
     player_tier = models.CharField(
         max_length=2,
-        choices=PlayerTierType.choices,
-        default=PlayerTierType.ROOKIE,
+        choices=PLAYER_TIER_TYPE.choices,
+        default=PLAYER_TIER_TYPE.ROOKIE,
     )
     one_intro = models.TextField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -54,14 +54,14 @@ class StandardDataSource(models.Model):
     manager = models.ForeignKey(User, related_name="managed_player", on_delete=models.SET_NULL, null=True)
     game_name = models.CharField(max_length=20, help_text="게임 이름")
 
-    class GameType(models.TextChoices):
-        SOCCER = 'SO', '축구'
-        FUTSAL = 'FU', '풋살'
-
+    GAME_TYPE = (
+        ('SO', '축구'),
+        ('FU', '풋살')
+    )
     game_type = models.CharField(
         max_length=2,
-        choices=GameType.choices,
-        default=GameType.FUTSAL,
+        choices=GAME_TYPE.choices,
+        default=GAME_TYPE.FUTSAL,
     )
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
