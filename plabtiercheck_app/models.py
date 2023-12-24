@@ -54,14 +54,14 @@ class StandardDataSource(models.Model):
     manager = models.ForeignKey(User, related_name="managed_player", on_delete=models.SET_NULL, null=True)
     game_name = models.CharField(max_length=20, help_text="게임 이름")
 
-    GAME_TYPE = (
+    GAME_TYPES = (
         ('SO', '축구'),
         ('FU', '풋살')
     )
     game_type = models.CharField(
         max_length=2,
-        choices=GAME_TYPE.choices,
-        default=GAME_TYPE.FUTSAL,
+        choices=GAME_TYPES,
+        default='FU'
     )
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
