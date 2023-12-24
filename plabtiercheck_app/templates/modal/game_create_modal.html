@@ -1,3 +1,4 @@
+{% load static %}
 <div class="modal fade" id="gameCreateModalToggle" aria-hidden="true" aria-labelledby="gameCreateModalToggleLabel" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -47,9 +48,25 @@
         게임 생성하기 버튼을 클릭하면 게임이 생성됩니다. <br>
         게임 생성 후 gps를 통해 기기를 연결하고 플레이어들과 연결해보세요.
       </div>
+      <!--        프로그레스바-->
+<!--      <div class="modal fade" id="pleaseWaitDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"aria-hidden="true"data-backdrop="static">-->
+<!--        <div class="modal-dialog">-->
+<!--          <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--              <h3>게임 생성중...</h3>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--              <div class="progress">-->
+<!--                <div class="bar"></div>-->
+<!--                <div class="percent">0%</div>-->
+<!--              </div>-->
+<!--              <div id="status"></div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
       <div class="modal-footer">
         <button class="btn btn-primary" data-bs-target="#gameCreateModalToggle" data-bs-toggle="modal">뒤로가기</button>
-<!--        <button class="btn btn-primary" data-bs-target="#gameCreateBtn" data-bs-toggle="modal">게임생성하기</button>-->
         <button class="btn btn-primary" id="gameCreateBtn">게임생성하기</button>
       </div>
     </div>
@@ -61,6 +78,9 @@
 <script>
 // createGame 함수 정의
 function createGame() {
+    // 클릭 이벤트 중복 방지를 위해 버튼 비활성화
+    document.getElementById("gameCreateBtn").disabled = true;
+
     var game_name = document.getElementById("gameName").value;
     var game_type = document.getElementById("gameTypeSelect").value;
     var isChecked = $('#checkIsManager').is(':checked'); // 체크 여부 가져오기
@@ -92,13 +112,21 @@ function createGame() {
                 },
                 error: function() {
                     alert("서버 오류 발생");
+                },
+                complete: function() {
+                    // 클릭 이벤트 완료 후 버튼 활성화
+                    document.getElementById("gameCreateBtn").disabled = false;
                 }
             });
         }, function(error) {
             alert("위치 정보를 얻어오는데 실패했습니다.");
+            // 클릭 이벤트 실패 시 버튼 활성화
+            document.getElementById("gameCreateBtn").disabled = false;
         });
     } else {
         alert("브라우저가 Geolocation API를 지원하지 않습니다.");
+        // 클릭 이벤트 실패 시 버튼 활성화
+        document.getElementById("gameCreateBtn").disabled = false;
     }
 }
 
@@ -106,6 +134,3 @@ function createGame() {
 document.getElementById("gameCreateBtn").onclick = createGame;
 
 </script>
-
-
-
