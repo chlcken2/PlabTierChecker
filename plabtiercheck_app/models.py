@@ -52,7 +52,7 @@ class StandardDataSource(models.Model):
     is_made = models.ForeignKey(Player, related_name="created_player", on_delete=models.CASCADE)
     players = models.ManyToManyField(Player, related_name="participate_players")
     manager = models.ForeignKey(User, related_name="managed_player", on_delete=models.SET_NULL, null=True)
-    game_name = models.CharField(max_length=20, help_text="게임 이름")
+    game_name = models.CharField(max_length=30, help_text="게임 이름")
 
     GAME_TYPES = (
         ('SO', '축구'),

@@ -1,3 +1,5 @@
+from html import escape
+
 from allauth.socialaccount.providers.kakao.provider import KakaoProvider
 from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2LoginView, OAuth2CallbackView
 from django.contrib.auth.decorators import login_required
@@ -41,13 +43,15 @@ def index(request):
 def create_game(request):
     if request.method == 'POST':
         # 게임 정보 추출
-        game_name = request.POST.get('game_name')
-        game_type = request.POST.get('game_type')
-        is_manager = True if request.POST.get('is_manager') == "true" else False
+        game_name = escape(request.POST.get('game_name'))
+        game_type = escape(request.POST.get('game_type'))
+        is_manager = True if escape(request.POST.get('is_manager')) == "true" else False
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
         player = request.user.player
         # 게임 생성 및 저장
+
+        print("@@game_name:", game_name)
         game = StandardDataSource.objects.create(
             game_type=game_type,
             game_name=game_name,
