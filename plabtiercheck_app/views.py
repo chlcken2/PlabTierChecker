@@ -51,7 +51,6 @@ def create_game(request):
         player = request.user.player
         # 게임 생성 및 저장
 
-        print("@@game_name:", game_name)
         game = StandardDataSource.objects.create(
             game_type=game_type,
             game_name=game_name,

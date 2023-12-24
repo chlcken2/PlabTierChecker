@@ -8,28 +8,28 @@
       </div>
       <div class="modal-body">
         <div class="mb-3">
-            <p class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">게임 생성자</p>
-            <input type="text" class="form-control" id="gameCreator" placeholder="" required value="{{ user.username }}님" readOnly>
-            <div class="invalid-feedback"> 생성자는 2자 이상 30자 이내로 입력해주세요.</div>
-          </div>
-          <div class="mb-3">
-            <p class="form-label team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">게임 이름</p>
-            <input type="text" class="form-control" id="gameName" name="teamName" placeholder="게임 이름을 작성해주세요." required minlength="2" maxlength="30">
-            <div class="invalid-feedback">게임 이름은 2자 이상 30자 이내로 입력해주세요.</div>
-          </div>
-          <div class="mb-3">
-            <p class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">타입</p>
-            <select class="form-select w-100" id="gameTypeSelect" aria-label="Default select example">
-              <option selected value="FU">풋살</option>
-              <option value="SO">축구</option>
-            </select>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" name=is_manager" type="checkbox" value="false" id="checkIsManager">
-            <label class="form-check-label" for="checkIsManager">
-              매니저인가요?
-            </label>
-          </div>
+          <p class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">게임 생성자</p>
+          <input type="text" class="form-control" id="gameCreator" placeholder="" required value="{{ user.username }}님" readOnly>
+          <div class="invalid-feedback"> 생성자는 2자 이상 30자 이내로 입력해주세요.</div>
+        </div>
+        <div class="mb-3">
+          <p class="form-label team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">게임 이름</p>
+          <input type="text" class="form-control" id="gameName" name="teamName" placeholder="게임 이름을 작성해주세요." required minlength="2" maxlength="30">
+          <div class="invalid-feedback">게임 이름은 2자 이상 30자 이내로 입력해주세요.</div>
+        </div>
+        <div class="mb-3">
+          <p class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">타입</p>
+          <select class="form-select w-100" id="gameTypeSelect" aria-label="Default select example">
+            <option selected value="FU">풋살</option>
+            <option value="SO">축구</option>
+          </select>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" name=is_manager" type="checkbox" value="false" id="checkIsManager">
+          <label class="form-check-label" for="checkIsManager">
+            매니저인가요?
+          </label>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" data-bs-target="#gameCreateModalToggle2" data-bs-toggle="modal">다음</button>
@@ -49,22 +49,22 @@
         게임 생성 후 gps를 통해 기기를 연결하고 플레이어들과 연결해보세요.
       </div>
       <!--        프로그레스바-->
-<!--      <div class="modal fade" id="pleaseWaitDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"aria-hidden="true"data-backdrop="static">-->
-<!--        <div class="modal-dialog">-->
-<!--          <div class="modal-content">-->
-<!--            <div class="modal-header">-->
-<!--              <h3>게임 생성중...</h3>-->
-<!--            </div>-->
-<!--            <div class="modal-body">-->
-<!--              <div class="progress">-->
-<!--                <div class="bar"></div>-->
-<!--                <div class="percent">0%</div>-->
-<!--              </div>-->
-<!--              <div id="status"></div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
+      <div class="modal fade" id="pleaseWaitDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"aria-hidden="true"data-backdrop="static">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>게임 생성중...</h3>
+            </div>
+            <div class="modal-body">
+              <div class="progress">
+                <div class="bar"></div>
+                <div class="percent">0%</div>
+              </div>
+              <div id="status"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="modal-footer">
         <button class="btn btn-primary" data-bs-target="#gameCreateModalToggle" data-bs-toggle="modal">뒤로가기</button>
         <button class="btn btn-primary" id="gameCreateBtn">게임생성하기</button>
@@ -76,61 +76,95 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-// createGame 함수 정의
 function createGame() {
-    // 클릭 이벤트 중복 방지를 위해 버튼 비활성화
     document.getElementById("gameCreateBtn").disabled = true;
 
     var game_name = document.getElementById("gameName").value;
     var game_type = document.getElementById("gameTypeSelect").value;
-    var isChecked = $('#checkIsManager').is(':checked'); // 체크 여부 가져오기
+    var isChecked = $('#checkIsManager').is(':checked');
+    var bar = $('.bar');
+    var percent = $('.percent');
+    var status = $('#status');
 
-    // 사용자의 위치 정보 얻기
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
+    $("#pleaseWaitDialog").modal('show');
+    status.empty();
 
-            // 위도와 경도 정보를 서버로 보내서 저장
-            $.ajax({
-                type: "POST",
-                url: "{% url 'create_game' %}",  // 뷰의 URL을 설정해야 합니다.
-                data: {
-                    csrfmiddlewaretoken: "{{ csrf_token }}",
-                    game_name: game_name,
-                    game_type: game_type,
-                    latitude: latitude,
-                    longitude: longitude,
-                    is_manager: isChecked
-                },
-                success: function(response) {
-                    if (response.success) {
-                        alert(response.message);
-                    } else {
-                        alert("게임 생성에 실패했습니다.");
-                    }
-                },
-                error: function() {
-                    alert("서버 오류 발생");
-                },
-                complete: function() {
-                    // 클릭 이벤트 완료 후 버튼 활성화
-                    document.getElementById("gameCreateBtn").disabled = false;
-                }
-            });
-        }, function(error) {
-            alert("위치 정보를 얻어오는데 실패했습니다.");
-            // 클릭 이벤트 실패 시 버튼 활성화
-            document.getElementById("gameCreateBtn").disabled = false;
-        });
-    } else {
-        alert("브라우저가 Geolocation API를 지원하지 않습니다.");
-        // 클릭 이벤트 실패 시 버튼 활성화
-        document.getElementById("gameCreateBtn").disabled = false;
+    function animateProgressBar(start, end, duration) {
+        var startTime = new Date().getTime();
+        var timer = setInterval(function() {
+            var timeElapsed = new Date().getTime() - startTime;
+            var progress = timeElapsed / duration;
+            var currentProgress = start + (end - start) * progress;
+
+            updateProgressBar(currentProgress);
+
+            if (progress >= 1) clearInterval(timer);
+        }, 100);
     }
+
+
+    function updateProgressBar(percentage) {
+        var roundedPercentage = Math.round(percentage);
+        var percentVal = roundedPercentage + '%';
+        bar.width(percentVal);
+        percent.html(percentVal);
+    }
+
+    function getGeolocation(callback) {
+        if (navigator.geolocation) {
+            animateProgressBar(10, 50, 5000); // 5초 동안 프로그레스바를 10%에서 50%까지 천천히 증가
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+                updateProgressBar(100); // 위치 정보를 받아오면 프로그레스바를 100%로 즉시 완료
+                callback(null, position.coords);
+            }, function(error) {
+                alert("위치 정보를 얻는데 실패했습니다.");
+                document.getElementById("gameCreateBtn").disabled = false;
+                callback(error);
+            });
+        } else {
+            alert("브라우저가 Geolocation API를 지원하지 않습니다.");
+            document.getElementById("gameCreateBtn").disabled = false;
+            callback(new Error("Geolocation not supported"));
+        }
+    }
+
+    getGeolocation(function(err, coords) {
+        if (err) {
+            alert("위치정보를 받아오는데 실패했습니다. 새로고침 후 이용해주세요.");
+            return; // 위치 정보를 가져오는데 실패한 경우
+        }
+        // AJAX 요청 시작
+        $.ajax({
+            type: "POST",
+            url: "{% url 'create_game' %}",
+            data: {
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                game_name: game_name,
+                game_type: game_type,
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                is_manager: isChecked
+            },
+            complete: function() {
+                updateProgressBar(100); // AJAX 성공시 프로그레스바를 100%로 설정
+                document.getElementById("gameCreateBtn").disabled = false;
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload();
+                } else {
+                    alert("게임 생성 실패");
+                }
+            },
+            error: function() {
+                alert("서버 오류 발생");
+            },
+        });
+    });
 }
 
-// 버튼에 onclick 이벤트를 할당
 document.getElementById("gameCreateBtn").onclick = createGame;
 
 </script>

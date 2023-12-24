@@ -66,3 +66,25 @@
     font-weight: 600;
     color: #727f88;
 }
+.progress{
+    position:relative;
+    width: 100%;
+    border: 2px;
+    solid: #ddd;
+    padding: 1px;
+    border-radius: 3px;
+}
+.bar {
+    background-color: #337ab7;
+    width: 0%;
+    height: 25px;
+    border-radius: 3px;
+}
+.percent {
+    position: absolute;
+    display:inline-block;
+    font-size: 18px;
+    font-weight: 600;
+    top:1px;
+    left:48px;
+}
