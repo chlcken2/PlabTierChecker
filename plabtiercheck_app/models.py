@@ -32,9 +32,6 @@ class Player(models.Model):
         choices=PLAYER_TIER_TYPE.choices,
         default=PLAYER_TIER_TYPE.ROOKIE,
     )
-    now_latitude = models.FloatField(null=True, blank=True)
-    now_longitude = models.FloatField(null=True, blank=True)
-    one_intro = models.TextField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
@@ -46,6 +43,7 @@ class Player_info(models.Model):
     player = models.OneToOneField(Player, related_name="player_info", on_delete=models.CASCADE)
     point = models.IntegerField(help_text="포인트", default=0)
     all_play_time = models.IntegerField(help_text="전체 게임 참여시간", default=0)
+    is_celebrity = models.BooleanField(help_text="셀럽 여부", default=False)
 
 
 class Manager(models.Model):
