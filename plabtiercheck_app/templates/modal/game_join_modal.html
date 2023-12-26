@@ -16,7 +16,7 @@
         </ul>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" data-bs-target="#gameJoinModalToggle2" data-bs-toggle="modal">다음</button>
+        <button class="btn btn-primary" data-bs-target="#gameJoinModalToggle2" data-bs-toggle="modal" disabled>다음</button>
       </div>
     </div>
   </div>
@@ -31,12 +31,12 @@
       <div class="modal-body">
         <li class="game-item flex justify-between gap-x-6 py-2 border-b border-gray-200 cursor-pointer" data-game-id="${game.id}">
           <div class="min-w-0 flex-auto">
-            <p class="text-sm font-semibold leading-6 text-gray-900">알수없는 오류</p>
-            <p class="mt-1 truncate text-xs leading-5 text-gray-500">${game.creator}</p>
+            <p class="text-sm font-semibold leading-6 text-gray-900">게임 이름</p>
+            <p class="mt-1 truncate text-xs leading-5 text-gray-500">생성자</p>
           </div>
           <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
             <p id="now-join-player" class="mt-1 text-xs leading-5 text-gray-500">신청인원: 0명</p>
-            <p id="time-ago" class="mt-1 text-xs leading-5 text-gray-500">${timeAgo}</p>
+            <p id="time-ago" class="mt-1 text-xs leading-5 text-gray-500">생성 시간</p>
           </div>
         </li>
       </div>
@@ -47,12 +47,60 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="bluetoothInfoModalToggle" aria-hidden="true" aria-labelledby="infoModalToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="infoModalToggleLabel">블루투스 연결하기</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <p class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">블루투스 연결</p>
+          <p class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">
+              기기와 블루투스를 연결을 통해 내 정보를 기록하고 플레이어들과 연결할 수 있습니다. <br>
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- 템플릿 내에서 JavaScript 코드 추가 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     var selectedGame = null;
     $(document).ready(function() {
+
+         $('#gameJoinBtn').click(function() {
+            if (selectedGame && selectedGame.id) {
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'join_game' %}",
+                    data: {
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                        game_id: selectedGame.id
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                        $('#gameJoinModalToggle2').modal('hide');
+                        // Show the GPS Info modal
+                        $('#bluetoothInfoModalToggle').modal('show');
+                    },
+                    error: function() {
+                        alert('게임 참여에 실패했습니다.');
+                    }
+                });
+            } else {
+                alert('게임을 선택해주세요.');
+            }
+        });
+
         // Geolocation 정보를 가져오는 함수
         function getGeolocation() {
             if (navigator.geolocation) {
@@ -95,17 +143,31 @@
             }
         }
 
+
+         $(document).click(function(event) {
+            // 게임 목록 외부를 클릭했을 때 "다음" 버튼 비활성화
+            if (!$(event.target).closest('#gamesList').length) {
+                $('#gameJoinModalToggle .modal-footer .btn-primary').prop('disabled', true);
+            }
+        });
+
+
         // 게임 항목 클릭 이벤트 핸들러
         $('#gamesList').on('click', '.game-item', function() {
-            $('.game-item').removeClass('selected');
-            $(this).addClass('selected');
+            $('.game-item button').removeClass('selected');
+            $(this).find('button').addClass('active');
             selectedGame = {
                 id: $(this).data('game-id'),
                 name: $(this).find('.text-gray-900').text(),
                 creator: $(this).find('.text-gray-500').first().text(),
                 nowJoinPlayer: $(this).find('#now-join-player').text(),
-                timeAgo: $(this).find('#time-ago').text()
+                timeAgo: $(this).find('#time-ago').text(),
             };
+            if (selectedGame.isJoined) {
+                $('#gameJoinModalToggle .modal-footer .btn-primary').prop('disabled', true);
+            } else {
+                $('#gameJoinModalToggle .modal-footer .btn-primary').prop('disabled', false);
+            }
         });
 
         // "다음" 버튼 클릭 이벤트 핸들러
@@ -120,6 +182,7 @@
                 modal2.find('.modal-body #time-ago').text(selectedGame.timeAgo);
                 // 두 번째 모달 표시
                 modal2.modal('show');
+                $(this).prop('disabled', true);
             } else {
                 alert('게임을 선택해주세요.');
             }
@@ -142,22 +205,25 @@
 
                     response.games.forEach(function(game) {
                         var timeAgo = calculateTimeAgo(game.match_time); // 'OO분 전' 형식의 문자열을 계산하는 함수
+                        var buttonText = game.is_joined ? '참여중' : '참여';
+                        var buttonClass = game.is_joined ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700 ';
+                        var isDisabled = game.is_joined ? 'disabled' : ''; // 버튼을 비활성화할지 여부를 결정합니다.
+                        var isDisabledStyle = game.is_joined ? 'style="pointer-events: none;"' : '';
                         var gameItem = `
-                            <!-- 게임 목록 -->
-                              <li class="game-item flex justify-between gap-x-6 py-2 border-b border-gray-200 cursor-pointer" data-game-id="${game.id}">
-                                  <!-- 기타 게임 정보 -->
-                                  <button class="inline-flex items-center active:bg-blue-60 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                                      신청
-                                  </button>
-                                  <div class="min-w-0 flex-auto">
-                                      <p class="text-sm font-semibold leading-6 text-gray-900">${game.game_name}</p>
-                                      <p class="mt-1 truncate text-xs leading-5 text-gray-500">생성자 | ${game.creator}</p>
-                                  </div>
-                                  <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-                                      <p id="now-join-player" class=" mt-1 text-xs leading-5 text-gray-500">신청인원: ${game.now_join_player}명</p>
-                                      <p id="time-ago" class="mt-1 text-xs leading-5 text-gray-500">${timeAgo}</p>
-                                  </div>
-                               </li>
+                            <li class="game-item flex justify-between gap-x-6 py-2 border-b border-gray-200 cursor-pointer" data-game-id="${game.id}" ${isDisabledStyle}>
+                                <!-- 기타 게임 정보 -->
+                                <button class=" inline-flex items-center active:bg-red-60 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ring-red-700/10 ${buttonClass}" ${isDisabled}>
+                                    ${buttonText}
+                                </button>
+                                <div class="min-w-0 flex-auto">
+                                    <p class="text-sm font-semibold leading-6 text-gray-900">${game.game_name}</p>
+                                    <p class="mt-1 truncate text-xs leading-5 text-gray-500">생성자 | ${game.creator}</p>
+                                </div>
+                                <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
+                                    <p id="now-join-player" class=" mt-1 text-xs leading-5 text-gray-500">신청인원: ${game.now_join_player}명</p>
+                                    <p id="time-ago" class="mt-1 text-xs leading-5 text-gray-500">${timeAgo}</p>
+                                </div>
+                             </li>
                         `;
                         gamesList.append(gameItem);
                     });

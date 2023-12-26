@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 import requests
+from django.views.decorators.http import require_POST
+
 from plabtiercheck_app.models import Player, PostGameStatistics, StandardDataSource
 from plabtiercheck_app.utils.calculator import calculate_area
 from plabtiercheck_app.utils.convertor import get_game_type_display
@@ -87,6 +89,7 @@ def create_game(request):
 
 # 플레이어의 위도경도 시간과 StandardDataSource의 위도경도, 시간을 가져와서 조건에 부합한 게임 정보만 리턴
 # 시간 조건 당일생성, 초과
+@require_POST
 @login_required
 def get_game(request):
     #  당일 생성된 게임 필터링
@@ -100,10 +103,12 @@ def get_game(request):
         player_lat = float(request.POST.get('latitude'))
         player_lon = float(request.POST.get('longitude'))
         game_area = calculate_area(float(game.latitude), float(game.longitude))
+        is_joined = True if request.user.player in game.players.all() else False
 
         if game_area['lat_lower'] <= player_lat <= game_area['lat_upper'] and game_area['lon_lower'] <= player_lon <= game_area['lon_upper']:
             games_data.append({
                 'id': game.id,
+                'is_joined': is_joined,
                 'creator': game.is_made.user.username,
                 'game_name': game.game_name,
                 'game_type': get_game_type_display(game.game_type),
@@ -114,6 +119,22 @@ def get_game(request):
     # 해당 게임정보 리턴
     return JsonResponse({'games': games_data})
 
+
+# 게임에 참가
+# 조건: 본인 1번 이상 참여 불가,
+@require_POST
+@login_required
+def join_game(request):
+    game_id = request.POST.get('game_id')
+    user = request.user
+
+    # 본인이 게임에 참여한 경우
+    if user.player in StandardDataSource.objects.get(id=game_id).players.all():
+        return JsonResponse({'status': 'error', 'message': '이미 해당 게임에 참여하셨습니다.'})
+
+    StandardDataSource.objects.get(id=game_id).players.add(user.player)
+
+    return JsonResponse({'status': 'success', 'message': '게임 참여 완료'})
 
 
 @login_required
