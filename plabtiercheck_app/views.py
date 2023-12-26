@@ -103,6 +103,7 @@ def get_game(request):
 
         if game_area['lat_lower'] <= player_lat <= game_area['lat_upper'] and game_area['lon_lower'] <= player_lon <= game_area['lon_upper']:
             games_data.append({
+                'id': game.id,
                 'creator': game.is_made.user.username,
                 'game_name': game.game_name,
                 'game_type': get_game_type_display(game.game_type),
