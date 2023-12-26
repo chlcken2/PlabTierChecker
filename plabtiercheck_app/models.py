@@ -26,9 +26,7 @@ class PLAYER_TIER_TYPE(models.TextChoices):  # divmod 연산자로 3을 나눈�
 
 class Player(models.Model):
     user = models.OneToOneField(User, related_name="player", on_delete=models.CASCADE)
-    point = models.IntegerField(help_text="포인트", default=0)
     player_path = models.SlugField(max_length=20)
-    one_day_game_participation = models.IntegerField(help_text="하루 참여 게임수", default=0)
     player_tier = models.CharField(
         max_length=2,
         choices=PLAYER_TIER_TYPE.choices,
@@ -42,6 +40,12 @@ class Player(models.Model):
 
     def __str__(self):
         return self.user.username + " #" + str(self.user.id)
+
+
+class Player_info(models.Model):
+    player = models.OneToOneField(Player, related_name="player_info", on_delete=models.CASCADE)
+    point = models.IntegerField(help_text="포인트", default=0)
+    all_play_time = models.IntegerField(help_text="전체 게임 참여시간", default=0)
 
 
 class Manager(models.Model):
