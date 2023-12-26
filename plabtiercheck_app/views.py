@@ -1,3 +1,4 @@
+from datetime import datetime
 from html import escape
 
 from allauth.socialaccount.providers.kakao.provider import KakaoProvider
@@ -7,7 +8,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 import requests
 from plabtiercheck_app.models import Player, PostGameStatistics, StandardDataSource
-
+from plabtiercheck_app.utils.calculator import calculate_area
+from plabtiercheck_app.utils.convertor import get_game_type_display
 
 
 class KakaoOAuth2Adapter(OAuth2Adapter):
@@ -81,6 +83,36 @@ def create_game(request):
         return JsonResponse(response_data)
 
     return render(request, 'mypage.html')
+
+
+# 플레이어의 위도경도 시간과 StandardDataSource의 위도경도, 시간을 가져와서 조건에 부합한 게임 정보만 리턴
+# 시간 조건 당일생성, 초과
+@login_required
+def get_game(request):
+    #  당일 생성된 게임 필터링
+    filtered_games = StandardDataSource.objects.filter(
+        created_at__date=datetime.now().date(),
+    )
+
+    #  당일 생성된 게임 중 위도경도 필터링
+    games_data = []
+    for game in filtered_games:
+        player_lat = float(request.POST.get('latitude'))
+        player_lon = float(request.POST.get('longitude'))
+        game_area = calculate_area(float(game.latitude), float(game.longitude))
+
+        if game_area['lat_lower'] <= player_lat <= game_area['lat_upper'] and game_area['lon_lower'] <= player_lon <= game_area['lon_upper']:
+            games_data.append({
+                'creator': game.is_made.user.username,
+                'game_name': game.game_name,
+                'game_type': get_game_type_display(game.game_type),
+                'match_time': game.created_at.strftime('%Y-%m-%dT%H:%M:%S'), # ISO 8601 형식
+                'now_join_player': game.players.count(),
+            })
+    print('games_data', games_data)
+    # 해당 게임정보 리턴
+    return JsonResponse({'games': games_data})
+
 
 
 @login_required

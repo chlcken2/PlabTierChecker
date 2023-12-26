@@ -3,6 +3,7 @@
 # 계산해서 리턴
 
 # calculate.py
+import math
 
 from plabtiercheck_app.models import ManagerEvaluationSource, TeammateEvaluationSource, GPSDataSource, PostGameStatistics
 
@@ -44,6 +45,27 @@ def calculate_post_game_statistics(game_id):
     post_game_stats.save()
 
     return post_game_stats
+
+
+def calculate_area(lat, lon):
+    EARTH_RADIUS = 6371000
+    distance = 100 / 2
+    rad_lat = math.radians(lat)
+
+    lat_change = math.degrees(distance / EARTH_RADIUS)
+    lon_change = math.degrees(distance / (EARTH_RADIUS * math.cos(rad_lat)))
+
+    lat_upper = lat + lat_change
+    lat_lower = lat - lat_change
+    lon_upper = lon + lon_change
+    lon_lower = lon - lon_change
+
+    return {
+        'lat_upper': lat_upper,
+        'lat_lower': lat_lower,
+        'lon_upper': lon_upper,
+        'lon_lower': lon_lower
+    }
 
 
 # gps 연결시 게임생성? 같은 장소에 존재하는 플레이어의 게임시간이 모두 달라질 수도?

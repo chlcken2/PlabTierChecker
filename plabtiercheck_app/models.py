@@ -33,6 +33,8 @@ class Player(models.Model):
         choices=PLAYER_TIER_TYPE.choices,
         default=PLAYER_TIER_TYPE.ROOKIE,
     )
+    now_latitude = models.FloatField(null=True, blank=True)
+    now_longitude = models.FloatField(null=True, blank=True)
     one_intro = models.TextField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -66,7 +68,7 @@ class StandardDataSource(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     one_day_play_time = models.IntegerField(help_text="하루 평균 플레이 시간 (분)", default=0)
-    played_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):

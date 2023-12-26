@@ -1,32 +1,141 @@
-<!--<div class="modal fade" id="joinGamgeToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">-->
-<!--  <div class="modal-dialog modal-dialog-centered">-->
-<!--    <div class="modal-content">-->
-<!--      <div class="modal-header">-->
-<!--        <h1 class="modal-title fs-5" id="exampleModalToggleLabel">게임 참여하기</h1>-->
-<!--        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--      </div>-->
-<!--      <form class="needs-validation">-->
-<!--        <div class="modal-body">-->
-<!--&lt;!&ndash;            게임이름 받아온 후 변경&ndash;&gt;-->
-<!--           <div class="mb-3">-->
-<!--            <label for="teamPathInput" class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">게임 생성자</label>-->
-<!--            <input type="text" class="form-control" id="teamPathInput" placeholder="" required value="{{ user.username }}님" readOnly>-->
-<!--          </div>-->
-<!--          <div class="mb-3">-->
-<!--&lt;!&ndash;              게임이름 받아온 후 변경 &ndash;&gt;-->
-<!--            <label for="gameNameInput" class="form-label team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">게임 이름</label>-->
-<!--            <input type="text" class="form-control" id="gameNameInput" placeholder="" required value="{{ user.username }}님" readOnly>-->
-<!--          </div>-->
-<!--          <div class="mb-3">-->
-<!--            <label class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">타입</label>-->
-<!--            <input type="text" class="form-control" id="gameTypeInput" placeholder="" required value="{{ user.username }}님" readOnly>-->
-<!--          </div>-->
-<!--            <button class="btn btn-secondary btn-sm" id="connectBluetooth">블루투스 연결하기</button>-->
-<!--        </div>-->
-<!--        <div class="modal-footer">-->
-<!--          <button class="btn btn-primary" data-bs-target="#gameJoinToggle1" data-bs-toggle="modal" data-bs-dismiss="modal">게임 가입하기</button>-->
-<!--        </div>-->
-<!--      </form>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
+{% load static %}
+<div class="modal fade" id="gameParticipateModalToggle" aria-hidden="true" aria-labelledby="gameParticipateModalToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="gameParticipateModalToggleLabel">게임 참여하기</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <p class="team_label" style="font-size: 12px; font-weight: 600; color: #727f88;">게임 참여자</p>
+          <input type="text" class="form-control" id="gameCreator" placeholder="" required value="{{ user.username }}님" readOnly>
+          <div class="invalid-feedback"> 생성자는 2자 이상 30자 이내로 입력해주세요.</div>
+        </div>
+        <div class="list-group" id="gamesList">
+          <!-- 서버에서 반환된 게임 정보를 여기에 동적으로 추가합니다 -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-bs-target="#gameParticipateModalToggle2" data-bs-toggle="modal">다음</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="gameParticipateModalToggle2" aria-hidden="true" aria-labelledby="gameParticipateModalToggleLabel2" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="gameParticipateModalToggleLabel2">게임 생성하기</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        게임 생성하기 버튼을 클릭하면 게임이 생성됩니다. <br>
+        게임 생성 후 gps를 통해 기기를 연결하고 플레이어들과 연결해보세요.
+      </div>
+      <!--        프로그레스바-->
+      <div class="modal fade" id="pleaseWaitDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"aria-hidden="true"data-backdrop="static">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>게임 생성중...</h3>
+            </div>
+            <div class="modal-body">
+              <div class="progress">
+                <div class="bar"></div>
+                <div class="percent">0%</div>
+              </div>
+              <div id="status"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-bs-target="#gameParticipateModalToggle" data-bs-toggle="modal">뒤로가기</button>
+        <button class="btn btn-primary" id="gameCreateBtn">게임생성하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 템플릿 내에서 JavaScript 코드 추가 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#gameParticipateModalToggle').on('show.bs.modal', function() {
+            getGeolocation();
+        });
+
+        function getGeolocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+
+                    sendLocationToServer(latitude, longitude);
+                }, function(error) {
+                    alert("위치 정보를 가져오는데 실패했습니다.");
+                });
+            } else {
+                alert("이 브라우저는 위치 정보 기능을 지원하지 않습니다.");
+            }
+        }
+
+        function calculateTimeAgo(matchTime) {
+            const matchDate = new Date(matchTime);
+            const now = new Date();
+            const timeDiff = Math.abs(now - matchDate);
+
+            const minutes = Math.floor(timeDiff / 60000); // 1분 = 60000밀리초
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (days > 0) {
+                return `${days}일 전`;
+            } else if (hours > 0) {
+                return `${hours}시간 전`;
+            } else if (minutes > 0) {
+                return `${minutes}분 전`;
+            } else {
+                return "방금 전";
+            }
+        }
+
+
+        function sendLocationToServer(latitude, longitude) {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'get_game' %}",
+                data: {
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    latitude: latitude,
+                    longitude: longitude,
+                    // 필요한 경우 CSRF 토큰 추가
+                },
+                success: function(response) {
+                    var gamesList = $('#gamesList');
+                    gamesList.empty(); // 리스트를 비웁니다.
+
+                    response.games.forEach(function(game) {
+                        var timeAgo = calculateTimeAgo(game.match_time); // 'OO분 전' 형식의 문자열을 계산하는 함수
+                        var gameItem = `
+                            <label class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">${game.game_name}</h5>
+                                    <small>생성자: ${game.creator}</small><br>
+                                    <small>생성시간: ${timeAgo}</small><br>
+                                    <small>참여인원: ${game.now_join_player}</small>
+                                </div>
+                                <input type="checkbox" class="form-check-input me-1" value="${game.id}">
+                            </label>
+                        `;
+                        gamesList.append(gameItem);
+                    });
+                },
+                error: function() {
+                    alert('서버에 위치 정보를 전송하는데 실패했습니다.');
+                }
+            });
+        }
+    });
+</script>

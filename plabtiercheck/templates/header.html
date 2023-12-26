@@ -8,7 +8,7 @@
                 <input type="text" class="form-control bg-light" placeholder="회원, 팀 이름으로 찾기" aria-label="회원 또는 팀을 입력하세요." aria-describedby="button-addon2" maxlength="100" autocomplete="off">
                 <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
             </div>
-            <div alt="Main tab">
+            <div alt="Main tab" class="flex justify-center">
                 <!-- 로그인 전에만 카카오 로그인 링크 표시 -->
             {% if not request.user.is_authenticated %}
                 <a href="{% provider_login_url 'kakao' %}">
