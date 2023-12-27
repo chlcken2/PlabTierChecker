@@ -1,37 +1,11 @@
-from time import localtime, timezone
-
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 
 
-class PLAYER_TIER_TYPE(models.TextChoices):  # divmod 연산자로 3을 나눈후 몫과 나머지로 계산
-    PRO1 = '1', '프로3'
-    PRO2 = '2', '프로2'
-    PRO3 = '3', '프로1'
-    SEMIPRO1 = '4', '세미프로3'
-    SEMIPRO2 = '5', '세미프로2'
-    SEMIPRO3 = '6', '세미프로1'  # level 3
-    AMATEUR1 = '7', '아마추어3'
-    AMATEUR2 = '8', '아마추어2'
-    AMATEUR3 = '9', '아마추어1'
-    BEGINNER1 = '10', '비기너3'
-    BEGINNER2 = '11', '비기너2'
-    BEGINNER3 = '12', '비기너1'
-    STARTER1 = '13', '스타터3'
-    STARTER2 = '14', '스타터2'
-    STARTER3 = '15', '스타터1'
-    ROOKIE = '16', '루키'
-
-
 class Player(models.Model):
     user = models.OneToOneField(User, related_name="player", on_delete=models.CASCADE)
     player_path = models.SlugField(max_length=20)
-    player_tier = models.CharField(
-        max_length=2,
-        choices=PLAYER_TIER_TYPE.choices,
-        default=PLAYER_TIER_TYPE.ROOKIE,
-    )
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
@@ -42,6 +16,31 @@ class Player(models.Model):
 class Player_info(models.Model):
     player = models.OneToOneField(Player, related_name="player_info", on_delete=models.CASCADE)
     point = models.IntegerField(help_text="포인트", default=0)
+
+    PLAYER_TIER_TYPE = (  # divmod 연산자로 3을 나눈후 몫과 나머지로 계산
+        ('1', '프로3'),
+        ('2', '프로2'),
+        ('3', '프로1'),
+        ('4', '세미프로3'),
+        ('5', '세미프로2'),
+        ('6', '세미프로1'),
+        ('7', '아마추어3'),
+        ('8', '아마추어2'),
+        ('9', '아마추어1'),
+        ('10', '비기너3'),
+        ('11', '비기너2'),
+        ('12', '비기너1'),
+        ('13', '스타터3'),
+        ('14', '스타터2'),
+        ('15', '스타터1'),
+        ('16', '루키')
+    )
+    player_tier = models.CharField(
+        max_length=2,
+        choices=PLAYER_TIER_TYPE,
+        default='16',
+    )
+    game_participation_count = models.IntegerField(help_text="게임 참여 횟수", default=0)
     all_play_time = models.IntegerField(help_text="전체 게임 참여시간", default=0)
     is_celebrity = models.BooleanField(help_text="셀럽 여부", default=False)
 
