@@ -1,33 +1,112 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <!-- 최근 등록된 플레이어 -->
-            <div class="col-md-6">
-                <h2>최근 등록된 플레이어</h2>
-<!--                <ul class="list-group">-->
-<!--                    {% for player in recent_players %}-->
-<!--                        <li class="list-group-item">{{ player.user.username }} - 가입일: {{ player.created_at }}</li>-->
-<!--                    {% empty %}-->
-<!--                        <li class="list-group-item">새로운 플레이어가 없습니다.</li>-->
-<!--                    {% endfor %}-->
-<!--                </ul>-->
+<div class="container flex flex-col justify-center">
+    <div class="mx-auto max-w-2xl py-32 sm:py-22 lg:py-32">
+        <div class="hidden sm:mb-8 sm:flex sm:justify-center">
+            <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+                플랩TierCheck <a href="#" class="font-semibold text-indigo-600"><span class="absolute inset-0"
+                                                                                            aria-hidden="true"></span> 더 알아보기 <span aria-hidden="true">&rarr;</span></a>
             </div>
-
-            <!-- 우수 플레이어 -->
-            <div class="col-md-6">
-                <h2>우수 플레이어</h2>
-                <ul class="list-group">
-                    {% for player_stat in top_players %}
-                        <li class="list-group-item">{{ player_stat.player.user.username }} - 평균 점수: {{ player_stat.average_teammate_score }}</li>
-                    {% empty %}
-                        <li class="list-group-item">우수 플레이어가 없습니다.</li>
+        </div>
+        <div class="text-center">
+            <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">데이터 기반으로<br> '진짜' 축구 티어를 측정해요</h1>
+            <p class="mt-6 text-lg leading-8 text-gray-600">gps기반으로 내 주변에서 만들어진 게임에 참여하고, 블루투스를 연결해 티어를 측정해보세요.</p>
+            <div class="w-full py-6">
+                <div class="container mx-auto w-1/2 px-10"> <!-- 넓이를 절반으로 줄임 -->
+                    <div class="relative text-gray-600">
+                        <input type="text"
+                               class="border-2 border-gray-300 bg-white h-12 px-5 pr-16 rounded-lg text-sm focus:outline-none focus:ring-0 w-full">
+                        <button type="submit" class="absolute right-0 top-0 mt-2 mr-1 p-2 focus:outline-none">
+                            <img src="{% static 'images/search-icon.png' %}" alt="검색" class="w-5 fill-current">
+                            <!-- 이미지 크기를 키우고 마진 조절 -->
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-3 gap-6 mx-20">
+        <!-- 좌측 칼럼: 우수 티어 플레이어 -->
+        <div class="col-span-1">
+            <h2 class="text-sm font-semibold mb-4">우수 티어 플레이어</h2>
+            <div>
+                <ul>
+                    {% for ranking_player, player_tier in ranking_players %}
+                    <li class="mb-2  pl-4 p-2 rounded-lg h-14 bg-gradient-to-r from-cyan-200 to-blue-50 transition-shadow duration-300 ease-in-out">
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex items-center">
+                                <span class="font-bold text-gray-800 mr-2">{{ forloop.counter }}</span>
+                                <img src="{% static 'images/ic_my.svg' %}" alt="플레이어 이미지" class="h-7 w-7 rounded-full border bg-white">
+                                <div class="flex-grow ml-2">
+                                    <h3 class="font-bold text-sm text-gray-700">{{ ranking_player.player.user.username }}</h3>
+                                    <p class="text-gray-600 text-xs">{{ player_tier }}</p>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="font-bold text-xs">{{ ranking_player.point }}P</p>
+                                <p class="text-gray-600 text-xs">{{ ranking_player.player.player_info.game_participation_count }}매치</p>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <!-- 가운데 칼럼: 많이 참여한 플레이어 -->
+        <div class="col-span-1">
+            <h2 class="text-sm font-semibold mb-4">열정 플레이어</h2>
+            <div>
+                <ul>
+                    {% for passion_player, player_tier in passion_players %}
+                    <li class="mb-2  pl-4 p-2 rounded-lg h-14 bg-gradient-to-r from-purple-200 to-pink-50 transition-shadow duration-300 ease-in-out">
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex items-center">
+                                <span class="font-bold text-gray-800 mr-2">{{ forloop.counter }}</span>
+                                <img src="{% static 'images/ic_my.svg' %}" alt="플레이어 이미지" class="h-7 w-7 rounded-full border bg-white">
+                                <div class="flex-grow ml-2">
+                                    <h3 class="font-bold text-sm text-gray-700">{{ passion_player.player.user.username }}</h3>
+                                    <p class="text-gray-600 text-xs">{{ player_tier }}</p>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="font-bold text-xs">{{ passion_player.point }}P</p>
+                                <p class="text-gray-600 text-xs">{{ passion_player.player.player_info.game_participation_count }}매치</p>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <!-- 우측 칼럼: 추천 플레이어 -->
+        <div class="col-span-1">
+            <h2 class="text-sm font-semibold mb-4">추천 플레이어</h2>
+            <div>
+                <ul>
+                    {% for celebrity_player, player_tier in celebrity_players %}
+                    <li class="mb-2  pl-4 p-2 rounded-lg h-14 bg-gradient-to-r from-violet-200 to-blue-50 transition-shadow duration-300 ease-in-out">
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex items-center">
+                                <span class="font-bold text-gray-800 mr-2">{{ forloop.counter }}</span>
+                                <img src="{% static 'images/ic_my.svg' %}" alt="플레이어 이미지" class="h-7 w-7 rounded-full border bg-white">
+                                <div class="flex-grow ml-2">
+                                    <h3 class="font-bold text-sm text-gray-700">{{ celebrity_player.player.user.username }}</h3>
+                                    <p class="text-gray-600 text-xs">{{ player_tier }}</p>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="font-bold text-xs">{{ celebrity_player.point }}P</p>
+                                <p class="text-gray-600 text-xs">{{ celebrity_player.player.player_info.game_participation_count }}매치</p>
+                            </div>
+                        </div>
+                    </li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- 여기에 홈 페이지의 나머지 내용을 추가합니다 -->
+<!-- 여기에 홈 페이지의 나머지 내용을 추가합니다 -->
 {% endblock %}

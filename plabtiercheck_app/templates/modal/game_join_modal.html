@@ -205,14 +205,14 @@
 
                     response.games.forEach(function(game) {
                         var timeAgo = calculateTimeAgo(game.match_time); // 'OO분 전' 형식의 문자열을 계산하는 함수
-                        var buttonText = game.is_joined ? '참여중' : '참여';
+                        var buttonText = game.is_joined ? '신청<br>완료' : '신청<br>가능';
                         var buttonClass = game.is_joined ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700 ';
                         var isDisabled = game.is_joined ? 'disabled' : ''; // 버튼을 비활성화할지 여부를 결정합니다.
                         var isDisabledStyle = game.is_joined ? 'style="pointer-events: none;"' : '';
                         var gameItem = `
                             <li class="game-item flex justify-between gap-x-6 py-2 border-b border-gray-200 cursor-pointer" data-game-id="${game.id}" ${isDisabledStyle}>
                                 <!-- 기타 게임 정보 -->
-                                <button class=" inline-flex items-center active:bg-red-60 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ring-red-700/10 ${buttonClass}" ${isDisabled}>
+                                <button class="leading-3 inline-flex items-center active:bg-red-60 rounded-md px-2 text-xs font-medium ring-1 ring-inset ring-red-700/10 ${buttonClass}" ${isDisabled}>
                                     ${buttonText}
                                 </button>
                                 <div class="min-w-0 flex-auto">
