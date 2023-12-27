@@ -1,6 +1,5 @@
 from datetime import datetime
 from html import escape
-
 from allauth.socialaccount.providers.kakao.provider import KakaoProvider
 from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2LoginView, OAuth2CallbackView
 from django.contrib.auth.decorators import login_required
@@ -8,10 +7,9 @@ from django.http import JsonResponse
 from django.shortcuts import render
 import requests
 from django.views.decorators.http import require_POST
-
-from plabtiercheck_app.models import Player, PostGameStatistics, StandardDataSource
+from plabtiercheck_app.models import  StandardDataSource, Player_info
 from plabtiercheck_app.utils.calculator import calculate_area
-from plabtiercheck_app.utils.convertor import get_game_type_display
+from plabtiercheck_app.utils.convertor import get_game_type_display, get_tier_display
 
 
 class KakaoOAuth2Adapter(OAuth2Adapter):
@@ -32,15 +30,32 @@ oauth2_login = OAuth2LoginView.adapter_view(KakaoOAuth2Adapter)
 oauth2_callback = OAuth2CallbackView.adapter_view(KakaoOAuth2Adapter)
 
 
+# StandardDataSource에 속한 players들은 게임에 참여한 회원이야 즉 count로 게임에 많이 참여한 회원 수를 추출하고
+# TeammateEvaluationSource의 evaluator는 평가한 Player이니까 TeammateEvaluationSource를 평가한 Player의 count로 회원이 평가한 수를 뽑아서
+# 서로 더한 다음 평균값이 높은 순서대로 10명을 뽑기
 def index(request):
-    game_id = 1
-    recent_players = Player.objects.all().order_by('-created_at')[:10]
-    # calculated_score_by_manager = calculate_post_game_statistics(game_id)
-    top_players = PostGameStatistics.objects.all().order_by('-average_teammate_score')[:10]
-    return render(request, 'index.html', {
-        'recent_players': recent_players,
-        'top_players': top_players
-    })
+    # 1. 랭킹 우수 플레이어 // 우수 랭커 10명
+    ranking_players = Player_info.objects.order_by('-point')[:10]
+    ranking_player_tiers = [get_tier_display(player_info.player_tier) for player_info in ranking_players]
+    ranking_players = list(zip(ranking_players, ranking_player_tiers))
+
+
+    # # 2. 열정 플레이어 // 게임에 많이 참여하고 많은 평가를 해준 회원 /  -> 추후 게임시간으로 갱신
+    passion_players = Player_info.objects.order_by('-game_participation_count')[:10]
+    passion_player_tiers = [get_tier_display(player_info.player_tier) for player_info in passion_players]
+    passion_players = list(zip(passion_players, passion_player_tiers))
+
+    # 3.celebrity_players = 셀럽 플레이어 checked
+    celebrity_players = Player_info.objects.filter(is_celebrity=True)[:10]
+    celebrity_player_tiers = [get_tier_display(player_info.player_tier) for player_info in celebrity_players]
+    celebrity_players = list(zip(celebrity_players, celebrity_player_tiers))
+
+    context = {
+        'ranking_players': ranking_players,
+        'passion_players': passion_players,
+        'celebrity_players': celebrity_players,
+    }
+    return render(request, 'index.html', context)
 
 
 @login_required  # 로그인된 사용자만 이용 가능
@@ -121,7 +136,7 @@ def get_game(request):
 
 
 # 게임에 참가
-# 조건: 본인 1번 이상 참여 불가,
+# 조건: 본인 1번 이상 참여 불가, TODO 2시간 이내 게임 참여 불가
 @require_POST
 @login_required
 def join_game(request):
