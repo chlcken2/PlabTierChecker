@@ -5,8 +5,7 @@
     <div class="mx-auto max-w-2xl py-32 sm:py-22 lg:py-32">
         <div class="hidden sm:mb-8 sm:flex sm:justify-center">
             <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-                플랩TierCheck <a href="#" class="font-semibold text-indigo-600"><span class="absolute inset-0"
-                                                                                            aria-hidden="true"></span> 더 알아보기 <span aria-hidden="true">&rarr;</span></a>
+                플랩TierCheck <a href="#" class="font-semibold text-indigo-600"><span class="absolute inset-0"aria-hidden="true"></span> 더 알아보기 <span aria-hidden="true">&rarr;</span></a>
             </div>
         </div>
         <div class="text-center">
@@ -33,22 +32,24 @@
             <div>
                 <ul>
                     {% for ranking_player, player_tier in ranking_players %}
-                    <li class="mb-2  pl-4 p-2 rounded-lg h-14 bg-gradient-to-r from-cyan-200 to-blue-50 transition-shadow duration-300 ease-in-out">
-                        <div class="flex items-center justify-between w-full">
-                            <div class="flex items-center">
-                                <span class="font-bold text-gray-800 mr-2">{{ forloop.counter }}</span>
-                                <img src="{% static 'images/ic_my.svg' %}" alt="플레이어 이미지" class="h-7 w-7 rounded-full border bg-white">
-                                <div class="flex-grow ml-2">
-                                    <h3 class="font-bold text-sm text-gray-700">{{ ranking_player.player.user.username }}</h3>
-                                    <p class="text-gray-600 text-xs">{{ player_tier }}</p>
+                    <a href="/player/{{ranking_player.player.id}}">
+                        <li class="mb-2  pl-4 p-2 rounded-lg h-14 bg-gradient-to-r from-cyan-200 to-blue-50 transition-shadow duration-300 ease-in-out">
+                            <div class="flex items-center justify-between w-full">
+                                <div class="flex items-center">
+                                    <span class="font-bold text-gray-800 mr-2">{{ forloop.counter }}</span>
+                                    <img src="{% static 'images/ic_my.svg' %}" alt="플레이어 이미지" class="h-7 w-7 rounded-full border bg-white">
+                                    <div class="flex-grow ml-2">
+                                        <h3 class="font-bold text-sm text-gray-700">{{ ranking_player.player.user.username }}</h3>
+                                        <p class="text-gray-600 text-xs">{{ player_tier }}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-xs">{{ ranking_player.point }}P</p>
+                                    <p class="text-gray-600 text-xs">{{ ranking_player.player.player_info.game_participation_count }}매치</p>
                                 </div>
                             </div>
-                            <div>
-                                <p class="font-bold text-xs">{{ ranking_player.point }}P</p>
-                                <p class="text-gray-600 text-xs">{{ ranking_player.player.player_info.game_participation_count }}매치</p>
-                            </div>
-                        </div>
-                    </li>
+                        </li>
+                    </a>
                     {% endfor %}
                 </ul>
             </div>
@@ -59,22 +60,24 @@
             <div>
                 <ul>
                     {% for passion_player, player_tier in passion_players %}
-                    <li class="mb-2  pl-4 p-2 rounded-lg h-14 bg-gradient-to-r from-purple-200 to-pink-50 transition-shadow duration-300 ease-in-out">
-                        <div class="flex items-center justify-between w-full">
-                            <div class="flex items-center">
-                                <span class="font-bold text-gray-800 mr-2">{{ forloop.counter }}</span>
-                                <img src="{% static 'images/ic_my.svg' %}" alt="플레이어 이미지" class="h-7 w-7 rounded-full border bg-white">
-                                <div class="flex-grow ml-2">
-                                    <h3 class="font-bold text-sm text-gray-700">{{ passion_player.player.user.username }}</h3>
-                                    <p class="text-gray-600 text-xs">{{ player_tier }}</p>
+                    <a href="/player/{{passion_player.player.id}}">
+                        <li class="mb-2  pl-4 p-2 rounded-lg h-14 bg-gradient-to-r from-purple-200 to-pink-50 transition-shadow duration-300 ease-in-out">
+                            <div class="flex items-center justify-between w-full">
+                                <div class="flex items-center">
+                                    <span class="font-bold text-gray-800 mr-2">{{ forloop.counter }}</span>
+                                    <img src="{% static 'images/ic_my.svg' %}" alt="플레이어 이미지" class="h-7 w-7 rounded-full border bg-white">
+                                    <div class="flex-grow ml-2">
+                                        <h3 class="font-bold text-sm text-gray-700">{{ passion_player.player.user.username }}</h3>
+                                        <p class="text-gray-600 text-xs">{{ player_tier }}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-xs">{{ passion_player.point }}P</p>
+                                    <p class="text-gray-600 text-xs">{{ passion_player.player.player_info.game_participation_count }}매치</p>
                                 </div>
                             </div>
-                            <div>
-                                <p class="font-bold text-xs">{{ passion_player.point }}P</p>
-                                <p class="text-gray-600 text-xs">{{ passion_player.player.player_info.game_participation_count }}매치</p>
-                            </div>
-                        </div>
-                    </li>
+                        </li>
+                    </a>
                     {% endfor %}
                 </ul>
             </div>

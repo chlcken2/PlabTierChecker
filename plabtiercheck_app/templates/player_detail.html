@@ -1,4 +1,87 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<p>player 상세 페이지</p>
+<div class="container mx-auto bg-white">
+    <!--상단-->
+    <div class="flex justify-between items-center p-4 ">
+        <div class="flex items-center">
+            {% if profile_image %}
+            <img src="{{ profile_image}}" alt="플레이어 이미지" class="h-24 w-24 rounded-full mr-4">
+            {% else %}
+            <img src="{% static 'images/default_image.png'%}" alt="플레이어 이미지" class="h-24 w-24 rounded-full mr-4">
+            {% endif %}
+            <div class="flex">
+                <h2 class="text-4xl  font-extrabold">{{player.user.username}}</h2>
+                {% if player.player_path %}
+                <p class="text-gray-600 text-4xl">#{{player.player_path}}</p>
+                {% else %}
+                <p class="text-gray-600 text-4xl">#{{player.id}}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div>
+            <button id="socialMatchBtn" class="bg-blue-500 hover:bg-blue-700  font-bold py-2 px-4 rounded">소셜매치</button>
+            <button id="teamMatchBtn" class="bg-blue-500 hover:bg-blue-700  font-bold py-2 px-4 rounded">팀매치</button>
+            <!-- 섹션 -->
+            <div id="socialMatchSection" class="flex">
+                <img src="{% static 'images/'|add:player_tier_en|add:'.png' %}" alt="티어 이미지" class="h-28 w-24 mr-2">
+                <div class="">
+                    <p class="text-xl font-bold mb-1">{{player_tier_ko}} </p>
+                    <p class="text-gray-600 text-xs mb-0.5">{{player_info.point}}P</p>
+                    <p class="text-gray-600 text-xs">{{player_info.game_participation_count}} Match</p>
+                </div>
+
+
+            </div>
+            <div id="teamMatchSection" style="display:none;">
+                <p>팀매치 섹션 내용</p>
+            </div>
+        </div>
+    </div>
+    <!--중단-->
+    <div class="p-4 ">
+        <nav class="flex border-b">
+            <a href="#" class="text-blue-500 py-2 px-4">연간지표</a>
+            <a href="#" class="text-blue-500 py-2 px-4">월간지표</a>
+            <a href="#" class="text-blue-500 py-2 px-4">일간지표</a>
+        </nav>
+        <!-- 차트 컨테이너, Echarts 적용 -->
+        <div id="chartContainer" style="height: 400px;"></div>
+    </div>
+    <!--하단-->
+    <div class="p-4 mb-4 ">
+        <h3 class="text-xl font-bold mb-4">경기 기록</h3>
+        <table class="min-w-full">
+            <thead>
+            <tr class="border-b">
+                <th class="px-4 py-2">날짜</th>
+                <th class="px-4 py-2">플레이어</th>
+                <th class="px-4 py-2">점수</th>
+                <!-- 기타 필드 -->
+            </tr>
+            </thead>
+            <tbody>
+            <!-- 경기 데이터 반복 -->
+            <tr class="border-b">
+                <td class="px-4 py-2">2023-01-01</td>
+                <td class="px-4 py-2">홍길동</td>
+                <td class="px-4 py-2">100P</td>
+                <!-- 기타 필드 -->
+            </tr>
+            <!-- 반복 끝 -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
 {% endblock %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+    $("#teamMatchBtn").click(function() {
+        console.log("teamMatchBtn clicked");
+    });
+
+
+</script>

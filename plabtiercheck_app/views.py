@@ -4,12 +4,13 @@ from allauth.socialaccount.providers.kakao.provider import KakaoProvider
 from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2LoginView, OAuth2CallbackView
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 import requests
 from django.views.decorators.http import require_POST
-from plabtiercheck_app.models import  StandardDataSource, Player_info
+from plabtiercheck_app.models import StandardDataSource, Player_info, Player
 from plabtiercheck_app.utils.calculator import calculate_area
 from plabtiercheck_app.utils.convertor import get_game_type_display, get_tier_display
+from plabtiercheck_app.utils.getAllauthInfo import get_user_profile_image
 
 
 class KakaoOAuth2Adapter(OAuth2Adapter):
@@ -20,9 +21,11 @@ class KakaoOAuth2Adapter(OAuth2Adapter):
 
     def complete_login(self, request, app, token, **kwargs):
         headers = {"Authorization": "Bearer {0}".format(token.token)}
+
         resp = requests.get(self.profile_url, headers=headers)
         resp.raise_for_status()
         extra_data = resp.json()
+
         return self.get_provider().sociallogin_from_response(request, extra_data)
 
 
@@ -37,6 +40,7 @@ def index(request):
     # 1. 랭킹 우수 플레이어 // 우수 랭커 10명
     ranking_players = Player_info.objects.order_by('-point')[:10]
     ranking_player_tiers = [get_tier_display(player_info.player_tier) for player_info in ranking_players]
+
     ranking_players = list(zip(ranking_players, ranking_player_tiers))
 
 
@@ -158,5 +162,21 @@ def mypage(request):
     return render(request, 'mypage.html', {'user': user})
 
 
-def player_detail(request):
-    return render(request, 'player_detail.html')
+def player_detail(request, player_id):
+    player = get_object_or_404(Player, pk=player_id)
+    profile_image =get_user_profile_image(player.user)
+    player_info = Player_info.objects.get(player=player)
+    player_tier_en = player_info.player_tier
+    player_tier_ko = get_tier_display(player_info.player_tier)
+
+    context = {'player': player,
+               'player_info': player_info,
+               'player_tier_ko': player_tier_ko,
+               'player_tier_en': player_tier_en,
+               'profile_image': profile_image}
+
+    return render(request, 'player_detail.html', context)
+
+
+def faq(request):
+    return render(request, 'faq.html')
