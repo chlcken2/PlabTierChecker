@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="container mx-auto bg-white">
+<div class="container mx-auto bg-white pt-10">
     <!--상단-->
-    <div class="flex justify-between items-center p-4 ">
+    <div class="flex justify-between items-start p-4">
         <div class="flex items-center">
             {% if profile_image %}
             <img src="{{ profile_image}}" alt="플레이어 이미지" class="h-24 w-24 rounded-full mr-4">
@@ -19,22 +19,36 @@
                 {% endif %}
             </div>
         </div>
-        <div>
-            <button id="socialMatchBtn" class="bg-blue-500 hover:bg-blue-700  font-bold py-2 px-4 rounded">소셜매치</button>
-            <button id="teamMatchBtn" class="bg-blue-500 hover:bg-blue-700  font-bold py-2 px-4 rounded">팀매치</button>
-            <!-- 섹션 -->
-            <div id="socialMatchSection" class="flex">
-                <img src="{% static 'images/'|add:player_tier_en|add:'.png' %}" alt="티어 이미지" class="h-28 w-24 mr-2">
-                <div class="">
-                    <p class="text-xl font-bold mb-1">{{player_tier_ko}} </p>
-                    <p class="text-gray-600 text-xs mb-0.5">{{player_info.point}}P</p>
-                    <p class="text-gray-600 text-xs">{{player_info.game_participation_count}} Match</p>
-                </div>
-
-
+        <div class="w-80">
+            <div class="flex flex-row">
+                <div class="w-24 mr-2"></div>
+                <button id="socialMatchBtn" class="focus:outline-none font-bold pr-2 rounded">소셜매치</button>
+                <p>|</p>
+                <button id="teamMatchBtn" class="focus:outline-none text-gray-400 font-bold pl-2 rounded">팀매치</button>
             </div>
-            <div id="teamMatchSection" style="display:none;">
-                <p>팀매치 섹션 내용</p>
+            <div class="flex flex-row">
+                <img id ="socialMatchTier" src="{% static 'images/'|add:player_tier_en|add:'.png' %}" alt="티어 이미지" class="h-28 w-24 mr-2">
+                <div id="socialMatchSection" class="flex flex-row justify-center">
+                    <div class="flex flex-col justify-center items-start">
+                        <p class="text-xl font-bold mb-1">{{player_tier_ko}} </p>
+                        <p class="text-gray-600 text-xs mb-0.5">{{player_info.point}}P</p>
+                        <p class="text-gray-600 text-xs">{{player_info.game_participation_count}} Match</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <img id="teamMatchTier" src="{% static 'images/rookie1.png' %}" alt="티어 이미지" class="h-28 w-24 mr-2" style="display: none;">
+                <div id="teamMatchSection" class="flex flex-row justify-center" style="display: none;">
+                    <div class="flex flex-col justify-center items-start">
+                        <p class="text-xl font-bold mb-1">루키 </p>
+                        <p class="text-gray-600 text-xs mb-0.5">0 P</p>
+                        <p class="text-gray-600 text-xs">0 Match</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <div class="w-24 mr-2"></div>
+                <p class="text-black font-bold text-xs bg-gray-300 inline-block rounded p-1">S23 {{player_tier_ko}}</p>
             </div>
         </div>
     </div>
@@ -74,14 +88,40 @@
     </div>
 </div>
 
-{% endblock %}
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
 <script>
-    $("#teamMatchBtn").click(function() {
-        console.log("teamMatchBtn clicked");
+$(document).ready(function() {
+    // 소셜 매치 버튼 클릭 시
+    $("#socialMatchBtn").click(function() {
+        // 소셜 매치 섹션
+        $("#socialMatchSection").css("display", "");
+        $("#socialMatchTier").css("display", "");
+        $("#socialMatchBtn").removeClass("text-gray-400");
+        $("#socialMatchBtn").addClass("text-black");
+        // 팀 매치 섹션
+        $("#teamMatchSection").css("display", "none");
+        $("#teamMatchTier").css("display", "none");
+        $("#teamMatchBtn").removeClass("text-black");
+        $("#teamMatchBtn").addClass("text-gray-400");
     });
 
+    // 팀 매치 버튼 클릭 시
+    $("#teamMatchBtn").click(function() {
+        console.log("팀 매치 버튼 클릭");
+        // 팀 매치 섹션을 보이게 하고
+        $("#teamMatchSection").css("display", "");
+        $("#teamMatchTier").css("display", "");
+        $("#teamMatchBtn").removeClass("text-gray-400");
+        $("#teamMatchBtn").addClass("text-black");
+        // 소셜 매치 섹션을 숨김
+        $("#socialMatchSection").css("display", "none");
+        $("#socialMatchTier").css("display", "none");
+        $("#socialMatchBtn").removeClass("text-black");
+        $("#socialMatchBtn").addClass("text-gray-400");
+
+    });
+});
 
 </script>
+{% endblock %}
