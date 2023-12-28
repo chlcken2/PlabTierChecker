@@ -18,25 +18,25 @@ class Player_info(models.Model):
     point = models.IntegerField(help_text="포인트", default=0)
 
     PLAYER_TIER_TYPE = (  # divmod 연산자로 3을 나눈후 몫과 나머지로 계산
-        ('1', '프로3'),
-        ('2', '프로2'),
-        ('3', '프로1'),
-        ('4', '세미프로3'),
-        ('5', '세미프로2'),
-        ('6', '세미프로1'),
-        ('7', '아마추어3'),
-        ('8', '아마추어2'),
-        ('9', '아마추어1'),
-        ('10', '비기너3'),
-        ('11', '비기너2'),
-        ('12', '비기너1'),
-        ('13', '스타터3'),
-        ('14', '스타터2'),
-        ('15', '스타터1'),
-        ('16', '루키')
+        ('pro1', '프로3'),
+        ('pro2', '프로2'),
+        ('pro3', '프로1'),
+        ('semipro1', '세미프로3'),
+        ('semipro2', '세미프로2'),
+        ('semipro3', '세미프로1'),
+        ('amateur1', '아마추어3'),
+        ('amateur2', '아마추어2'),
+        ('amateur3', '아마추어1'),
+        ('beginner1', '비기너3'),
+        ('beginner2', '비기너2'),
+        ('beginner3', '비기너1'),
+        ('starter1', '스타터3'),
+        ('starter2', '스타터2'),
+        ('starter3', '스타터1'),
+        ('rookie', '루키')
     )
     player_tier = models.CharField(
-        max_length=2,
+        max_length=10,
         choices=PLAYER_TIER_TYPE,
         default='16',
     )
